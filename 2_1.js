@@ -1,5 +1,21 @@
 const fs = require('fs');
 
+function checkLevelsSafety(arr) {
+    let isAscStart = arr[0] < arr[1];
+    let safe = 1;
+
+    for(i = 0; i < arr.length; i++) {
+        if (arr[i+1]) {
+            if ((arr[i + 1] - arr[i] === 0) || (isAscStart !== arr[i] < arr[i + 1]) || (isAscStart && arr[i + 1] - arr[i] > 3) || (!isAscStart && arr[i] - arr[i + 1] > 3)) {
+                safe = 0;
+                break;
+            } 
+        }
+    }
+
+    return safe;
+}
+
 function calcSafe(data) {
     let score = 0;
 
@@ -9,35 +25,7 @@ function calcSafe(data) {
     })
 
     arr.forEach((levels) => {
-        let isAscStart = levels[0] < levels[1];
-        let safe = 1
-        let reason = ''
-
-        for(i = 0; i < levels.length; i++) {
-            if (levels[i+1]) {
-                if (levels[i + 1] - levels[i] === 0) {
-                    reason = 'duplicates'
-                    safe = 0;
-                    break;
-                } else if (isAscStart !== levels[i] < levels[i + 1]) {
-                    reason = 'order changed'
-                    safe = 0;
-                    break;
-                } else if (isAscStart && levels[i + 1] - levels[i] > 3) {
-                    reason = 'too big difference'
-                    safe = 0;
-                    break;
-                } else if (!isAscStart && levels[i] - levels[i + 1] > 3) {
-                    reason = 'too big difference'
-                    safe = 0;
-                    break;
-                } else {
-                    safe = 1
-                }
-            }
-        }
-
-        score += safe
+        score += checkLevelsSafety(levels);
     })
 
     return score;
