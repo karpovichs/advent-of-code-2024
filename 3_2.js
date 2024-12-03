@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 function multiply(data) {
-    const multiplyRegexp = /mul\(\d+,\d+\)/gi;
+    const multiplyRegexp = /mul\(\d{1,3},\d{1,3}\)/gi;
     const dataArr = data.match(multiplyRegexp);
     const multiplyArr = [];
     let  result = 0;
@@ -15,9 +15,7 @@ function multiply(data) {
     })
 
     multiplyArr.forEach((item) => {
-        if (item[0] < 1000 && item[1] < 1000) {
-            result += item[0] * item[1];
-        }
+        result += item[0] * item[1];
     })
 
     return result;
