@@ -1,72 +1,53 @@
 const fs = require('fs');
 
-function findStartPosition(map) {
-    for (let i = 0; i < map.length; i++) {
-        if (map[i].indexOf('^') > 0) {
-            return([i, map[i].indexOf('^')])
-        }
-    }
-}
-
-function checkIfInBounds(map, position) {
-    return position[0] - 1 >= 0 && position[1] - 1 >= 0 && position[0] + 1 < map[0].length && position[1] + 1 < map.length
-}
-
-
 function calcPositions(map) {
-    let currP = findStartPosition(map);
-    let currD = map[currP[0]][currP[1]]
+	const grid = map.split("\n").map(line => line.split(""));
 
-    while(checkIfInBounds(map, currP)) {
-        if (currD === '^') {
-            if (map[currP[0] - 1][currP[1]] === '#') {
-                currD = '>'
-            } else {
-                map[currP[0]][currP[1]] = 'X'
-                currP = [currP[0] - 1, currP[1]]
-                map[currP[0]][currP[1]] = '^'
-            }
-        }
+	const guardPosV = grid.findIndex(line => line.join("").includes("^"));
+	const guardPosH = grid[guardPosV].indexOf("^");
+	const guardPos = { 
+        v: guardPosV,
+        h: guardPosH 
+    };
+	grid[guardPos.v][guardPos.h] = "X";
 
-        if (currD === '>') {
-            if (map[currP[0]][currP[1] + 1] === '#') {
-                currD = 'v'
-            } else {
-                map[currP[0]][currP[1]] = 'X'
-                currP = [currP[0], currP[1] + 1]
-                map[currP[0]][currP[1]] = '>'
-            }
-        }
+	const dir = { 
+        v: -1, 
+        h: 0 , 
+        count: 0
+    };
 
-        if (currD === 'v') {
-            if (map[currP[0] + 1][currP[1]] === '#') {
-                currD = '<'
-            } else {
-                map[currP[0]][currP[1]] = 'X'
-                currP = [currP[0] + 1, currP[1]]
-                map[currP[0]][currP[1]] = 'v'
-            }
-        }
+    const directions = [
+        { v: 0, h: 1 },  // from up to right
+        { v: 1, h: 0 },  // from right to down
+        { v: 0, h: -1 }, // from down to left
+        { v: -1, h: 0 }  // from left to up
+    ];
 
-        if (currD === '<') {
-            if (map[currP[0]][currP[1] - 1] === '#') {
-                currD = '^'
-            } else {
-                map[currP[0]][currP[1]] = 'X'
-                currP = [currP[0], currP[1] - 1]
-                map[currP[0]][currP[1]] = 'v'
-            }
-        }
-    }
+	while (true) {
+	    if (!grid[guardPos.v + dir.v] || !grid[guardPos.v + dir.v][guardPos.h + dir.h]) break;
 
-    return map.map((i) => i.join('')).join('').match(/X/g).length + 1;
+	    if (grid[guardPos.v + dir.v][guardPos.h + dir.h] === "#") {
+	        const nextDirection = (directions.findIndex(d => d.v === dir.v && d.h === dir.h) + 1) % directions.length;
+	        dir.v = directions[nextDirection].v;
+	        dir.h = directions[nextDirection].h;
+	        dir.count ++;
+	    }
+
+	    guardPos.v += dir.v;
+	    guardPos.h += dir.h;
+	    grid[guardPos.v][guardPos.h] = "X";
+	}
+    
+	console.log(grid.map(line => line.join("")).join("\n"));
+	console.log(grid.map(line => line.join("")).join("\n").split("").filter(c => c === "X").length);
 }
 
-fs.readFile('6.txt', 'utf8', (err, data) => {
+fs.readFile('6_test.txt', 'utf8', (err, data) => {
     if(err) {
         console.log(err);
         return;
     }
     
-    console.log('total positions: ', calcPositions(data.split('\n').map((item) => item.split(''))));
+    calcPositions(data)
 })
