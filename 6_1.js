@@ -19,10 +19,7 @@ function calcPositions(map) {
 
     while(checkIfInBounds(map, currP)) {
         if (currD === '^') {
-            console.log('to top')
-
             if (map[currP[0] - 1][currP[1]] === '#') {
-                'turn to >'
                 currD = '>'
             } else {
                 map[currP[0]][currP[1]] = 'X'
@@ -32,10 +29,7 @@ function calcPositions(map) {
         }
 
         if (currD === '>') {
-            console.log('to right')
-
             if (map[currP[0]][currP[1] + 1] === '#') {
-                'turn to '
                 currD = 'v'
             } else {
                 map[currP[0]][currP[1]] = 'X'
@@ -45,10 +39,7 @@ function calcPositions(map) {
         }
 
         if (currD === 'v') {
-            console.log('to bottom')
-
             if (map[currP[0] + 1][currP[1]] === '#') {
-                'turn to left'
                 currD = '<'
             } else {
                 map[currP[0]][currP[1]] = 'X'
@@ -58,10 +49,7 @@ function calcPositions(map) {
         }
 
         if (currD === '<') {
-            console.log('to left')
-
             if (map[currP[0]][currP[1] - 1] === '#') {
-                'turn to top'
                 currD = '^'
             } else {
                 map[currP[0]][currP[1]] = 'X'
