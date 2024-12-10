@@ -1,11 +1,5 @@
 const fs = require('fs');
 
-function replace(index, string, replace) {
-    string = string.split('');
-    string[index] = replace;
-    return string.join('');
-}
-
 function getResult(data) {
     let dataMap = []
     let currVal = 0
