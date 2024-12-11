@@ -1,42 +1,46 @@
 const fs = require('fs');
 
 function getResult(data) {
-    const stones = data.trim().split(' ').map(s => parseInt(s.trim()));
-    let count = 0;
-    let cache = new Map();
+    const stones = data.split(' ').map(s => parseInt(s));
+    let cache = {};
+    let score = 0;
 
-    function blink(stone, depth, target) {
-        const key = `${stone}.${depth}`
-        const cached = cache.get[key]
+    function blink(stone, counter, target) {
+        const line = ''.concat(stone, ':', counter)
 
-        if (cached !== undefined) {
-            return cached
+        if (Object.hasOwn(cache, line)) {
+            return cache[line]
         }
 
-        let result = 0;
-        const nextDepth = depth + 1;
-        const stoneStr = stone.toString();
+        if (counter === target) {
+            return 1;
+        }
 
-        if (depth === target) {
-            return result = 1;
-        } else if (stone === 0) {
-            result = blink(1, nextDepth, target)
-        } else if (stoneStr.length % 2 === 0) {
-            result = blink( parseInt(stoneStr.slice(0, stoneStr.length / 2)), nextDepth, target) + blink(parseInt(stoneStr.slice(stoneStr.length / 2)), nextDepth, target);
+        counter++;
+
+        let value = 0;
+
+        if (stone === 0) {
+            value = blink(1, counter, target)
+        } else if (stone.toString().length % 2 === 0) {
+            const mid = stone.toString().length / 2
+            const first = parseInt(stone.toString().slice(0, mid))
+            const second = parseInt(stone.toString().slice(mid))
+            value += blink(first, counter, target)
+            value += blink(second, counter, target)
         } else {
-            result = blink(stone * 2024, nextDepth, target)
+            value = blink(stone * 2024, counter, target)
         }
-        
-        cache.set(key, result);
-        return result;
-    }
 
-    for (const stone of stones) {
-        console.log(stone)
-        count += blink(stone, 0, 75)
-    }
+        cache[line] = value
 
-    return count;
+        return value
+    }
+    
+    stones.forEach((stone) => {
+        score += blink(stone, 0, 75)
+    })
+    return score;
 }
 
 fs.readFile('11.txt', 'utf8', (err, data) => {

@@ -25,7 +25,6 @@ function getResult(data) {
     }
 
     start.forEach((num) => {
-        console.log(num)
         blink(num, 0, 25)
     })
 
