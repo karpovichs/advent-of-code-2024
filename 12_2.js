@@ -5,9 +5,8 @@ function getResult(data) {
     const cells = {}
     let score = 0;
     let counter = 1;
-
-    let fenceCounter = 0
     let areaCounter = 0
+    let cornerCounter = 0
 
     function findArea(pos) {
         if (cells[`${pos[0]}.${pos[1]}`]) {
@@ -20,39 +19,52 @@ function getResult(data) {
         const bottom = garden[pos[0] + 1] ? garden[pos[0] + 1][pos[1]] : undefined
         const left = garden[pos[0]][pos[1] - 1]
 
-        let fence = 4
- 
+        const topLeft = garden[pos[0] - 1] ? garden[pos[0] - 1][pos[1] - 1] : undefined
+        const topRight = garden[pos[0] - 1] ? garden[pos[0] - 1][pos[1] + 1] : undefined
+        const bottomRight = garden[pos[0] + 1] ? garden[pos[0] + 1][pos[1] + 1] : undefined
+        const bottomLeft = garden[pos[0] + 1] ? garden[pos[0] + 1][pos[1] - 1] : undefined
+        
         cells[`${pos[0]}.${pos[1]}`] = counter
+
+        if ((left === cellType && top === cellType && topLeft !== cellType) || (left !== cellType && top !== cellType)) {
+            cornerCounter++
+        }
+
+        if ((top === cellType && right === cellType && topRight !== cellType) || (top !== cellType && right !== cellType)) {
+            cornerCounter++
+        }
+
+        if ((right === cellType && bottom === cellType && bottomRight !== cellType) || (right !== cellType && bottom !== cellType)) {
+            cornerCounter++
+        }
+
+        if ((bottom === cellType && left === cellType && bottomLeft !== cellType) || (bottom !== cellType && left !== cellType)) {
+            cornerCounter++
+        }
 
         if (top && top === cellType) {
             findArea([pos[0] - 1, pos[1]])
-            fence--
         } 
         if (right && right === cellType) {
             findArea([pos[0], pos[1] + 1])
-            fence--
         } 
         if (bottom && bottom === cellType) {
-            findArea([pos[0] + 1, pos[1]])
-            fence--
+            findArea([pos[0] + 1, pos[1]])        
         } 
         if (left && left === cellType) {
             findArea([pos[0], pos[1] - 1])
-            fence--
         }
 
-        fenceCounter += fence
         areaCounter++
     }
 
     garden.forEach((row, i) => {
         row.forEach((cell, j) => {
-            console.log([i, j])
             if (!cells[`${i}.${j}`]) {
                 findArea([i, j])
-                score += areaCounter * fenceCounter
+                score += areaCounter * cornerCounter
                 areaCounter = 0
-                fenceCounter = 0
+                cornerCounter = 0
                 counter++
             }
         })
